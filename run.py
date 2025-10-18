@@ -2,6 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+##### No guarantee that this code is free of errors. Use at your own risk. #####
+##### Sources for data:
+##### Inflation: https://www.usinflationcalculator.com/inflation/consumer-price-index-and-annual-percent-changes-from-1913-to-2008/
+##### Gold: https://www.macrotrends.net/1333/historical-gold-prices-100-year-chart
+##### ETFS: https://curvo.eu/backtest/en
+
 # Configuration section
 FILES_TO_PLOT = [
     {
@@ -14,24 +20,18 @@ FILES_TO_PLOT = [
         'label': 'MSCI World',
         'color': 'blue'
     },
-    #{
-    #    'filename': 'msci_em.csv',
-    #    'label': 'MSCI Emerging Markets',
-    #    'color': 'green'
-    #},
-    # You can add or remove files here
-    # {
-    #     'filename': 'inflation.csv',
-    #     'label': 'Inflation',
-    #     'color': 'red'
-    # }
+    {
+        'filename': 'msci_em.csv',
+        'label': 'MSCI Emerging Markets',
+        'color': 'green'
+    },
 ]
 
 # Read and process inflation data
 def get_inflation_data():
     inflation_df = pd.read_csv('inflation.csv')
     # Create a date series from the inflation data (using December values)
-    dates = pd.to_datetime([f"{row['Year']}/12" for _, row in inflation_df.iterrows()], format='%Y/%m')
+    dates = pd.to_datetime([f"{int(row['Year'])}/12" for _, row in inflation_df.iterrows()], format='%Y/%m')
     values = inflation_df['Dec'].values
     return pd.DataFrame({'Date': dates, 'Value': values})
 
@@ -116,6 +116,7 @@ plt.title(f'Inflation-Adjusted Asset Performance (Dec 2024 Dollars)\nAligned fro
 plt.xlabel('Date', fontsize=12)
 plt.ylabel('Normalized Value (Log Scale)', fontsize=12)
 plt.yscale('log')  # Set logarithmic scale for y-axis
+plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: '{:,.0f}'.format(x)))  # Format y-axis labels as regular numbers
 plt.legend(fontsize=10, loc='upper left')
 plt.grid(True, alpha=0.3, which='both')  # Add grid lines for both major and minor ticks
 
